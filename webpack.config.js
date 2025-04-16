@@ -7,10 +7,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const ENVIRONMENT = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
-const ENVIRONMENT_VARS = {
-    development: require('./env.development.json'),
-    production: require('./env.production.json')
-};
 const BUILD_DIR = process.env.BUILD_DIR ? path.resolve(process.env.BUILD_DIR) : path.resolve(__dirname, './build');
 
 module.exports = {
