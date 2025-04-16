@@ -73,7 +73,7 @@ if (ENVIRONMENT === 'development') {
                     move: [
                         {
                             source: './dist/main.min.js',
-                            destination: './dist/classify-administration.min.js'
+                            destination: './dist/messenger.min.js'
                         }
                     ],
                     delete: ['./dist/main.min.js.map', './dist/vendors-bundle.min.js.map']
