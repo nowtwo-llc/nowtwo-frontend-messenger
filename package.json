@@ -1,0 +1,37 @@
+{
+    "author": "Classify Learning",
+    "name": "@classifylearning/frontend-messenger",
+    "description": "Project to utilize AWS AppSync to send live updates to the frontend.",
+    "repository": "git@github.com:classifylearning/frontend-messenger.git",
+    "main": "src/Messenger.ts",
+    "license": "MIT",
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
+    "scripts": {
+        "build:dev": "cross-env NODE_ENV=development webpack --progress",
+        "build:prod": "cross-env NODE_ENV=production BUILD_DIR=./dist/ webpack --progress",
+        "update": "npm-check-updates -u",
+        "watch": "cross-env NODE_ENV=development webpack --progress --watch"
+    },
+    "version": "1.0.0",
+    "files": [
+        "build/",
+        "dist/"
+    ],
+    "devDependencies": {
+        "@types/ws": "^8.18.1",
+        "clean-webpack-plugin": "^4.0.0",
+        "cross-env": "^7.0.3",
+        "filemanager-webpack-plugin": "^8.0.0",
+        "npm-check-updates": "^17.1.18",
+        "terser-webpack-plugin": "^5.3.14",
+        "ts-loader": "^9.5.2",
+        "typescript": "^5.8.3",
+        "webpack": "^5.99.5",
+        "webpack-cli": "^6.0.1"
+    },
+    "dependencies": {
+        "aws-amplify": "^6.14.2"
+    }
+}

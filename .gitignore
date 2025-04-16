@@ -1,0 +1,12 @@
+# Dependency directories
+build/
+lib/
+node_modules/
+
+# ESLint
+.eslintcache
+eslint-report.html
+
+# Logs
+logs
+*.log
