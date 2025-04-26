@@ -4,6 +4,8 @@ import { events } from 'aws-amplify/data';
 export class Messenger {
     public globalChannel: any;
     public userChannel: any;
+    public protoringChannel: any;
+    public testingChannel: any;
 
     constructor(configObject: any) {
         Amplify.configure({
@@ -17,16 +19,18 @@ export class Messenger {
             }
         });
 
-        this.globalChannel = events.connect(`default/${configObject.globalChannel}`);
-        this.userChannel = events.connect(`default/${configObject.userChannel}`);
-
-        window.addEventListener('offline', () => {
-            console.log('Network is offline.');
-        });
-
-        window.addEventListener('online', () => {
-            console.log('Network is online.');
-        });
+        if (configObject.globalChannel) {
+            this.globalChannel = events.connect(`default/${configObject.globalChannel}`);
+        }
+        if (configObject.userChannel) {
+            this.userChannel = events.connect(`default/${configObject.userChannel}`);
+        }
+        if (configObject.protoringChannel) {
+            this.protoringChannel = events.connect(`default/${configObject.protoringChannel}`);
+        }
+        if (configObject.testingChannel) {
+            this.testingChannel = events.connect(`default/${configObject.testingChannel}`);
+        }
     }
 
     public getGlobalChannel() {
@@ -35,5 +39,13 @@ export class Messenger {
 
     public getUserChannel() {
         return this.userChannel;
+    }
+
+    public getProtoringChannel() {
+        return this.protoringChannel;
+    }
+
+    public getTestingChannel() {
+        return this.testingChannel;
     }
 }
