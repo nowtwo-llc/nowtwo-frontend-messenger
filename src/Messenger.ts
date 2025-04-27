@@ -4,7 +4,7 @@ import { events } from 'aws-amplify/data';
 export class Messenger {
     public globalChannel: any;
     public userChannel: any;
-    public protoringChannel: any;
+    public proctoringChannel: any;
     public testingChannel: any;
 
     constructor(configObject: any) {
@@ -25,8 +25,8 @@ export class Messenger {
         if (configObject.userChannel) {
             this.userChannel = events.connect(`default/${configObject.userChannel}`);
         }
-        if (configObject.protoringChannel) {
-            this.protoringChannel = events.connect(`default/${configObject.protoringChannel}`);
+        if (configObject.proctoringChannel) {
+            this.proctoringChannel = events.connect(`default/${configObject.proctoringChannel}`);
         }
         if (configObject.testingChannel) {
             this.testingChannel = events.connect(`default/${configObject.testingChannel}`);
@@ -41,8 +41,8 @@ export class Messenger {
         return this.userChannel;
     }
 
-    public getProtoringChannel() {
-        return this.protoringChannel;
+    public getProctoringChannel() {
+        return this.proctoringChannel;
     }
 
     public getTestingChannel() {

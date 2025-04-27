@@ -13,7 +13,7 @@ module.exports = {
     entry: './src/Messenger.ts',
     output: {
         path: path.resolve(__dirname, process.env.BUILD_DIR || 'build'),
-        filename: ENVIRONMENT === 'production' ? '[name].min.js' : '[name].js',
+        filename: ENVIRONMENT === 'production' ? '[name].min.js' : 'messenger.js',
         libraryTarget: 'umd',
         chunkFilename: '[id].[chunkhash].js'
     },
