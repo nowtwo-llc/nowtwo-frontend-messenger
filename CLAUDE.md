@@ -17,6 +17,16 @@ npm run watch         # Watch mode for development
 npm run update        # Check and update dependencies
 ```
 
+## Code Quality Commands
+
+```bash
+npm run lint          # Run ESLint on src/
+npm run lint:fix      # Run ESLint with auto-fix
+npm run format        # Format code with Prettier
+npm run format:check  # Check formatting without changes
+npm run typecheck     # Run TypeScript type checking
+```
+
 ## Architecture
 
 ### Core Design
@@ -46,5 +56,4 @@ Environment files (`env.development.json`, `env.production.json`) provide enviro
 ## Notes
 
 - No test framework currently configured
-- No linting configured
 - Type declarations (.d.ts) are auto-generated in build output
