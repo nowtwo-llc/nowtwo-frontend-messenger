@@ -17,6 +17,14 @@ npm run watch         # Watch mode for development
 npm run update        # Check and update dependencies
 ```
 
+## Testing Commands
+
+```bash
+npm test              # Run all tests
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with coverage report
+```
+
 ## Code Quality Commands
 
 ```bash
@@ -55,5 +63,5 @@ Environment files (`env.development.json`, `env.production.json`) provide enviro
 
 ## Notes
 
-- No test framework currently configured
 - Type declarations (.d.ts) are auto-generated in build output
+- Tests use Jest with ts-jest for TypeScript support
