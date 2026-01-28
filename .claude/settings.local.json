@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/robertvelton/Projects/ClassifyLearning/frontend-messenger log --oneline -20)"
+    ]
+  }
+}
