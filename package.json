@@ -4,6 +4,7 @@
     "description": "Project to utilize AWS AppSync to send live updates to the frontend.",
     "repository": "git@github.com:classifylearning/frontend-messenger.git",
     "main": "src/Messenger.ts",
+    "types": "build/Messenger.d.ts",
     "license": "MIT",
     "publishConfig": {
         "registry": "https://npm.pkg.github.com/"
@@ -11,6 +12,14 @@
     "scripts": {
         "build:dev": "cross-env NODE_ENV=development webpack --progress",
         "build:prod": "cross-env NODE_ENV=production BUILD_DIR=./dist/ webpack --progress",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "lint": "eslint src/ --ext .ts,.tsx",
+        "lint:fix": "eslint src/ --ext .ts,.tsx --fix",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\"",
+        "typecheck": "tsc --noEmit",
         "update": "npm-check-updates -u",
         "watch": "cross-env NODE_ENV=development webpack --progress --watch"
     },
@@ -20,12 +29,20 @@
         "dist/"
     ],
     "devDependencies": {
+        "@types/jest": "^29.5.0",
         "@types/ws": "^8.18.1",
+        "@typescript-eslint/eslint-plugin": "^8.0.0",
+        "@typescript-eslint/parser": "^8.0.0",
         "clean-webpack-plugin": "^4.0.0",
         "cross-env": "^7.0.3",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
         "filemanager-webpack-plugin": "^8.0.0",
+        "jest": "^29.7.0",
         "npm-check-updates": "^18.0.1",
+        "prettier": "^3.3.0",
         "terser-webpack-plugin": "^5.3.14",
+        "ts-jest": "^29.2.0",
         "ts-loader": "^9.5.2",
         "typescript": "^5.8.3",
         "webpack": "^5.99.9",

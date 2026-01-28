@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git -C /Users/robertvelton/Projects/ClassifyLearning/frontend-messenger log --oneline -20)"
+      "Bash(git -C /Users/robertvelton/Projects/ClassifyLearning/frontend-messenger log --oneline -20)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run format:check:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm run build:dev:*)",
+      "Bash(npm run build:prod:*)",
+      "Bash(npm test:*)",
+      "Bash(npm run test:coverage:*)"
     ]
   }
 }

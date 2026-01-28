@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 
@@ -6,8 +5,10 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 
-const ENVIRONMENT = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
-const BUILD_DIR = process.env.BUILD_DIR ? path.resolve(process.env.BUILD_DIR) : path.resolve(__dirname, './build');
+const ENVIRONMENT = process.env.NODE_ENV || 'development';
+const BUILD_DIR = process.env.BUILD_DIR
+    ? path.resolve(process.env.BUILD_DIR)
+    : path.resolve(__dirname, './build');
 
 module.exports = {
     entry: './src/Messenger.ts',
