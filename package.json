@@ -49,6 +49,6 @@
         "webpack-cli": "^6.0.1"
     },
     "dependencies": {
-        "aws-amplify": "^6.15.0"
+        "aws-amplify": "^6.16.0"
     }
 }
