@@ -23,7 +23,7 @@
         "update": "npm-check-updates -u",
         "watch": "cross-env NODE_ENV=development webpack --progress --watch"
     },
-    "version": "2.0.0",
+    "version": "2.1.0",
     "files": [
         "build/",
         "dist/"
