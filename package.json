@@ -52,6 +52,6 @@
         "aws-amplify": "^6.16.0"
     },
     "overrides": {
-        "fast-xml-parser": "^5.3.4"
+        "fast-xml-parser": "^5.7.1"
     }
 }
