@@ -1,0 +1,97 @@
+{
+    "name": "@nowtwo-llc/frontend-messenger",
+    "version": "3.0.0",
+    "description": "Channel-based real-time messaging for the browser, built on AWS AppSync Events via AWS Amplify.",
+    "author": "NowTwo LLC <support@nowtwo.io> (https://www.nowtwo.io/)",
+    "license": "MIT",
+    "homepage": "https://github.com/nowtwo-llc/nowtwo-frontend-messenger#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nowtwo-llc/nowtwo-frontend-messenger.git"
+    },
+    "bugs": {
+        "url": "https://github.com/nowtwo-llc/nowtwo-frontend-messenger/issues"
+    },
+    "keywords": [
+        "appsync",
+        "amplify",
+        "aws",
+        "realtime",
+        "websocket",
+        "pubsub",
+        "events",
+        "messaging",
+        "typescript"
+    ],
+    "main": "./dist/frontend-messenger.cjs",
+    "module": "./dist/frontend-messenger.mjs",
+    "types": "./dist/types/Messenger.d.ts",
+    "unpkg": "./dist/frontend-messenger.min.js",
+    "jsdelivr": "./dist/frontend-messenger.min.js",
+    "exports": {
+        ".": {
+            "types": "./dist/types/Messenger.d.ts",
+            "import": "./dist/frontend-messenger.mjs",
+            "require": "./dist/frontend-messenger.cjs",
+            "default": "./dist/frontend-messenger.mjs"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "files": [
+        "dist/"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "build": "npm run build:prod",
+        "build:dev": "cross-env NODE_ENV=development webpack --progress",
+        "build:prod": "npm run clean:dist && cross-env NODE_ENV=production BUILD_DIR=./dist/ webpack --progress && npm run build:types",
+        "build:types": "tsc -p tsconfig.types.json",
+        "clean": "rm -rf build dist coverage",
+        "clean:dist": "rm -rf dist",
+        "demo": "npm run build:prod && node scripts/serve-demo.mjs",
+        "eslint": "eslint --fix --cache --color .",
+        "eslint:format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"*.{js,mjs,json}\" && eslint --fix .",
+        "lint": "npm run eslint",
+        "lint:check": "eslint --color --max-warnings=0 .",
+        "prepublishOnly": "npm run build:prod",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+        "update": "npm-check-updates -u",
+        "watch": "cross-env NODE_ENV=development webpack --progress --watch"
+    },
+    "peerDependencies": {
+        "aws-amplify": "^6.20.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@types/node": "^26.1.2",
+        "@vitest/coverage-v8": "^4.1.10",
+        "aws-amplify": "^6.20.0",
+        "cross-env": "^10.1.0",
+        "eslint": "^10.8.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.6",
+        "globals": "^17.8.0",
+        "jsdom": "^30.0.1",
+        "npm-check-updates": "^23.0.0",
+        "prettier": "^3.9.6",
+        "terser-webpack-plugin": "^5.6.1",
+        "ts-loader": "^9.6.2",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.65.0",
+        "vitest": "^4.1.10",
+        "webpack": "^5.109.2",
+        "webpack-cli": "^7.2.2"
+    },
+    "overrides": {
+        "fast-xml-parser": "^5.3.4"
+    }
+}

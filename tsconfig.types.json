@@ -1,0 +1,14 @@
+// Declaration-only build. The webpack bundles disable ts-loader's declaration
+// output (three compilers would otherwise race to write the same .d.ts files),
+// so types are generated once from here into dist/types.
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "outDir": "./dist/types",
+        "rootDir": "./src"
+    },
+    "include": ["./src/Messenger.ts"]
+}

@@ -1,0 +1,11 @@
+// Type-checks the test suite. Kept separate from tsconfig.json so that Vitest's
+// globals and the Node types the suite needs never leak into the library build,
+// which must stay browser-only.
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "types": ["node", "vitest/globals"]
+    },
+    "include": ["./src", "./tests", "./vitest.config.mts"]
+}
