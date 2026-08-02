@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Frontend Messenger — real-time channels for the browser</title>
+        <meta
+            name="description"
+            content="Channel-based real-time messaging for the browser, built on AWS AppSync Events via AWS Amplify."
+        />
+
+        <link rel="stylesheet" href="./demo.css" />
+        <style>
+            /* Frontend Messenger's identity: the signal-teal of a live connection. */
+            :root {
+                --nt-accent: #0ea5a4;
+                --nt-accent-ink: #04211f;
+            }
+
+            /* ── Demo-only additions ──────────────────────────────────────
+               The shared shell has no form or log styling, so the pieces this
+               page needs are defined here in terms of the shell's variables. */
+
+            .nt-field-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+                gap: 0.9rem 1.1rem;
+                margin: 0 0 1.2rem;
+                padding: 1.1rem 1.25rem;
+                background: var(--nt-surface);
+                border: 1px solid var(--nt-line);
+                border-radius: 10px;
+            }
+
+            .nt-field {
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
+                min-width: 0;
+            }
+
+            .nt-field label {
+                font-family: var(--nt-mono);
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: var(--nt-muted);
+            }
+
+            .nt-field input,
+            .nt-field select {
+                width: 100%;
+                padding: 0.5rem 0.6rem;
+                color: var(--nt-fg);
+                background: var(--nt-bg);
+                border: 1px solid var(--nt-line);
+                border-radius: 7px;
+                font-family: var(--nt-mono);
+                font-size: 0.85rem;
+            }
+
+            .nt-field input:focus-visible,
+            .nt-field select:focus-visible {
+                outline: 2px solid var(--nt-accent);
+                outline-offset: 1px;
+            }
+
+            /* Live mode needs credentials; demo mode has nothing to fill in. */
+            .nt-field-grid[hidden] {
+                display: none;
+            }
+
+            /* A connection light that reads at a glance. */
+            .nt-conn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+            }
+
+            .nt-dot {
+                width: 0.6rem;
+                height: 0.6rem;
+                border-radius: 50%;
+                background: var(--nt-muted);
+                flex: none;
+            }
+
+            .nt-dot[data-state="connecting"] {
+                background: #d99a1d;
+                animation: nt-pulse 1s ease-in-out infinite;
+            }
+
+            .nt-dot[data-state="connected"] {
+                background: var(--nt-accent);
+            }
+
+            .nt-dot[data-state="error"] {
+                background: #e0524a;
+            }
+
+            @keyframes nt-pulse {
+                50% {
+                    opacity: 0.35;
+                }
+            }
+
+            /* The event feed. Scrolls internally so the page never jumps as
+               messages arrive. */
+            .nt-log {
+                height: 15rem;
+                margin: 0;
+                padding: 0.75rem 0.9rem;
+                overflow-y: auto;
+                background: var(--nt-code-bg);
+                border: 1px solid var(--nt-line);
+                border-radius: 10px;
+                font-family: var(--nt-mono);
+                font-size: 0.8rem;
+                line-height: 1.55;
+                list-style: none;
+            }
+
+            .nt-log li {
+                display: flex;
+                gap: 0.6rem;
+                padding: 0.15rem 0;
+            }
+
+            .nt-log li + li {
+                border-top: 1px solid var(--nt-line);
+            }
+
+            .nt-log time {
+                flex: none;
+                color: var(--nt-muted);
+                font-variant-numeric: tabular-nums;
+            }
+
+            .nt-log .nt-log-body {
+                word-break: break-word;
+                min-width: 0;
+            }
+
+            .nt-log li[data-kind="in"] .nt-log-body {
+                color: var(--nt-accent-text);
+            }
+
+            .nt-log li[data-kind="error"] .nt-log-body {
+                color: #e0524a;
+            }
+
+            .nt-log li[data-kind="meta"] .nt-log-body {
+                color: var(--nt-muted);
+            }
+
+            .nt-log-empty {
+                color: var(--nt-muted);
+            }
+
+            .nt-send {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.6rem;
+                margin-top: 0.9rem;
+            }
+
+            .nt-send input {
+                flex: 1 1 18rem;
+                min-width: 0;
+                padding: 0.7rem 0.8rem;
+                color: var(--nt-fg);
+                background: var(--nt-surface);
+                border: 1px solid var(--nt-line);
+                border-radius: 8px;
+                font-family: var(--nt-mono);
+                font-size: 0.85rem;
+            }
+
+            .nt-send input:focus-visible {
+                outline: 2px solid var(--nt-accent);
+                outline-offset: 1px;
+            }
+
+            button[disabled] {
+                opacity: 0.45;
+                cursor: not-allowed;
+            }
+
+            /* Wide tables scroll rather than pushing the page sideways. */
+            .nt-table-wrap {
+                overflow-x: auto;
+            }
+
+            .nt-table-wrap table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.9rem;
+            }
+
+            .nt-table-wrap th,
+            .nt-table-wrap td {
+                padding: 0.5rem 0.7rem;
+                text-align: left;
+                border-bottom: 1px solid var(--nt-line);
+                vertical-align: top;
+            }
+
+            .nt-table-wrap th {
+                font-family: var(--nt-mono);
+                font-size: 0.72rem;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--nt-muted);
+                white-space: nowrap;
+            }
+
+            .nt-table-wrap td:first-child {
+                font-family: var(--nt-mono);
+                white-space: nowrap;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="nt-page">
+            <!-- prettier-ignore -->
+            <h1 class="nt-title">frontend<em>messenger</em></h1>
+            <p class="nt-lede">
+                Channel-based real-time messaging for the browser. A small wrapper over AWS AppSync Events that turns
+                connection plumbing into named channels you subscribe to and publish on.
+            </p>
+
+            <ul class="nt-meta">
+                <li>v3.0.0</li>
+                <li>~12k ESM</li>
+                <li>AppSync Events</li>
+                <li>MIT</li>
+            </ul>
+
+            <section class="nt-section">
+                <h2 class="nt-label">Try it</h2>
+
+                <div class="nt-options" role="radiogroup" aria-label="Connection mode">
+                    <label>
+                        <input type="radio" name="mode" value="demo" checked />
+                        Demo mode — simulated transport, no AWS account
+                    </label>
+                    <label>
+                        <input type="radio" name="mode" value="live" />
+                        Live mode — connect to your own AppSync API
+                    </label>
+                </div>
+
+                <p class="nt-note" id="mode-note">
+                    Demo mode runs a stand-in transport in this page. The library is never contacted, but every control
+                    below drives the same method names you would call for real.
+                </p>
+
+                <div class="nt-field-grid" id="credentials" hidden>
+                    <div class="nt-field">
+                        <label for="appId">AppSync API ID</label>
+                        <input
+                            id="appId"
+                            type="text"
+                            placeholder="abcdefg123456"
+                            autocomplete="off"
+                            spellcheck="false"
+                        />
+                    </div>
+                    <div class="nt-field">
+                        <label for="region">Region</label>
+                        <input id="region" type="text" value="us-east-1" autocomplete="off" spellcheck="false" />
+                    </div>
+                    <div class="nt-field">
+                        <label for="key">API key</label>
+                        <input id="key" type="password" placeholder="da2-…" autocomplete="off" spellcheck="false" />
+                    </div>
+                    <div class="nt-field">
+                        <label for="namespace">Namespace</label>
+                        <input id="namespace" type="text" value="default" autocomplete="off" spellcheck="false" />
+                    </div>
+                    <div class="nt-field">
+                        <label for="channel">Channel name</label>
+                        <input id="channel" type="text" value="broadcast" autocomplete="off" spellcheck="false" />
+                    </div>
+                    <div class="nt-field">
+                        <label for="authMode">Auth mode</label>
+                        <select id="authMode">
+                            <option value="apiKey">apiKey</option>
+                            <option value="userPool">userPool</option>
+                            <option value="iam">iam</option>
+                            <option value="oidc">oidc</option>
+                            <option value="lambda">lambda</option>
+                            <option value="none">none</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="nt-controls">
+                    <button id="connect" type="button" class="nt-trigger">Connect</button>
+                    <button id="disconnect" type="button" class="nt-btn" disabled>Disconnect</button>
+                    <button id="clear" type="button" class="nt-btn">Clear log</button>
+                </div>
+
+                <p class="nt-status" role="status">
+                    <span class="nt-conn">
+                        <span class="nt-dot" id="dot" data-state="idle"></span>
+                        <span id="status">Idle — not connected.</span>
+                    </span>
+                </p>
+
+                <h2 class="nt-label" style="margin-top: 2rem">Event feed</h2>
+                <ul class="nt-log" id="log" aria-live="polite">
+                    <li data-kind="meta">
+                        <span class="nt-log-body nt-log-empty">Nothing yet. Connect to start.</span>
+                    </li>
+                </ul>
+
+                <div class="nt-send">
+                    <input
+                        id="message"
+                        type="text"
+                        value='{ "text": "hello" }'
+                        aria-label="Message to publish"
+                        spellcheck="false"
+                    />
+                    <button id="publish" type="button" class="nt-btn" disabled>Publish</button>
+                </div>
+                <p class="nt-note">
+                    Anything that is not valid JSON is published as a plain string. In demo mode your message is echoed
+                    back over the simulated channel, alongside a periodic synthetic event.
+                </p>
+            </section>
+
+            <section class="nt-section">
+                <h2 class="nt-label">Install</h2>
+                <pre class="nt-code"><code>npm install @nowtwo-llc/frontend-messenger aws-amplify</code></pre>
+                <p class="nt-note">
+                    <code>aws-amplify</code>
+                    is a peer dependency — Amplify keeps its configuration in a process-wide singleton, so your app and
+                    this library must share one copy of it.
+                </p>
+            </section>
+
+            <section class="nt-section">
+                <h2 class="nt-label">Use</h2>
+                <pre class="nt-code"><code>import { Messenger } from '@nowtwo-llc/frontend-messenger';
+
+const messenger = new Messenger({
+    appId: 'your-appsync-id',
+    region: 'us-east-1',
+    key: 'your-api-key',
+    channels: { alerts: 'alerts-v2' }
+});
+
+const subscription = await messenger.subscribe('alerts', {
+    next: (data) => console.log('Received:', data),
+    error: (err) => console.error('Error:', err)
+});
+
+await messenger.publish('alerts', { level: 'info', text: 'hello' });
+
+subscription.unsubscribe();
+await messenger.disconnectAll();</code></pre>
+            </section>
+
+            <section class="nt-section">
+                <h2 class="nt-label">API</h2>
+                <div class="nt-table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>connect(name, opts?)</td>
+                                <td>Opens a channel, or returns the connection already in flight.</td>
+                            </tr>
+                            <tr>
+                                <td>subscribe(name, obs, opts?)</td>
+                                <td>Subscribes to a channel, connecting first if needed.</td>
+                            </tr>
+                            <tr>
+                                <td>publish(name, event, opts?)</td>
+                                <td>Publishes over the channel's WebSocket.</td>
+                            </tr>
+                            <tr>
+                                <td>post(name, event, opts?)</td>
+                                <td>Publishes over HTTP, without opening a connection.</td>
+                            </tr>
+                            <tr>
+                                <td>disconnect(name)</td>
+                                <td>Closes one channel, keeping its registration.</td>
+                            </tr>
+                            <tr>
+                                <td>disconnectAll()</td>
+                                <td>Closes every channel this instance opened.</td>
+                            </tr>
+                            <tr>
+                                <td>getStatus(name)</td>
+                                <td>
+                                    <code>idle</code>
+                                    ,
+                                    <code>connecting</code>
+                                    ,
+                                    <code>connected</code>
+                                    ,
+                                    <code>error</code>
+                                    or
+                                    <code>closed</code>
+                                    .
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="nt-note">
+                    The 2.x getters —
+                    <code>getGlobalChannel()</code>
+                    ,
+                    <code>getUserChannel()</code>
+                    ,
+                    <code>getProctoringChannel()</code>
+                    and
+                    <code>getTestingChannel()</code>
+                    — still work. See the
+                    <a href="https://github.com/nowtwo-llc/nowtwo-frontend-messenger#readme">README</a>
+                    for every configuration option.
+                </p>
+            </section>
+
+            <footer class="nt-footer">
+                <p>
+                    MIT licensed ·
+                    <a href="https://github.com/nowtwo-llc/nowtwo-frontend-messenger">Source on GitHub</a>
+                </p>
+                <p>
+                    Maintained by
+                    <a href="https://www.nowtwo.io/">NowTwo LLC</a>
+                    .
+                </p>
+            </footer>
+        </main>
+
+        <script src="../dist/frontend-messenger.min.js"></script>
+        <script src="./main.js"></script>
+    </body>
+</html>

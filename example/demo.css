@@ -1,0 +1,319 @@
+/*
+ * NowTwo demo shell — shared across nowtwo-llc library demos.
+ *
+ * This file is intentionally byte-identical in every repo that uses it. The
+ * only thing a project changes is --nt-accent / --nt-accent-ink, set in the
+ * page itself. Keep edits in sync across repos rather than forking it.
+ */
+
+:root {
+    color-scheme: light dark;
+
+    /* Cool ink neutrals. Deliberately not warm/cream — the accents are warm,
+       and they need a cool ground to sit against. */
+    --nt-bg: #f7f8fa;
+    --nt-surface: #fff;
+    --nt-fg: #14181f;
+    --nt-muted: #5b6472;
+    --nt-line: #dfe3e9;
+    --nt-code-bg: #eef1f5;
+    --nt-shadow: rgb(20 24 31 / 8%);
+
+    /* Overridden per project. --nt-accent is a fill; --nt-accent-ink is the
+       text that sits on that fill. */
+    --nt-accent: #ff8426;
+    --nt-accent-ink: #1a0d00;
+
+    /* Accent as *text* needs contrast against the page, and a fill colour rarely
+       has it in both schemes — #ff8426 is only ~2.5:1 on a light background.
+       Blending toward the foreground keeps links readable in light and dark
+       without each project hand-tuning two accents. */
+    --nt-accent-text: var(--nt-accent);
+    --nt-accent-text: color-mix(in oklab, var(--nt-accent) 68%, var(--nt-fg));
+
+    --nt-mono: ui-monospace, sfmono-regular, "SF Mono", menlo, consolas, monospace;
+    --nt-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --nt-bg: #0e1116;
+        --nt-surface: #161b22;
+        --nt-fg: #e7ebf0;
+        --nt-muted: #98a2b3;
+        --nt-line: #262d38;
+        --nt-code-bg: #11161d;
+        --nt-shadow: rgb(0 0 0 / 40%);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: clamp(2.5rem, 8vh, 5.5rem) 1.25rem 4rem;
+    background: var(--nt-bg);
+    color: var(--nt-fg);
+    font-family: var(--nt-sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+}
+
+.nt-page {
+    max-width: 44rem;
+    margin: 0 auto;
+}
+
+/* ── Masthead ─────────────────────────────────────────────────────── */
+
+/* Monospace display: the library's name set in the same face as the command
+   you type to install it. */
+.nt-title {
+    margin: 0;
+    font-family: var(--nt-mono);
+    font-size: clamp(2rem, 7vw, 3.1rem);
+    font-weight: 600;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+}
+
+.nt-title em {
+    color: var(--nt-accent-text);
+    font-style: normal;
+}
+
+.nt-lede {
+    max-width: 34rem;
+    margin: 0.9rem 0 0;
+    color: var(--nt-muted);
+    font-size: 1.1rem;
+}
+
+/* Spec-sheet meta row: real facts, not badges. */
+.nt-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.9rem;
+    margin: 1.4rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--nt-mono);
+    font-size: 0.8rem;
+    color: var(--nt-muted);
+}
+
+.nt-meta li::after {
+    content: "·";
+    margin-left: 0.9rem;
+    opacity: 0.5;
+}
+
+.nt-meta li:last-child::after {
+    content: none;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────── */
+
+.nt-section {
+    margin-top: 3.25rem;
+}
+
+.nt-label {
+    margin: 0 0 0.9rem;
+    font-family: var(--nt-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--nt-muted);
+}
+
+/* ── The trigger: the one loud element on the page ────────────────── */
+
+.nt-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nt-trigger,
+.nt-btn {
+    font: inherit;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition:
+        transform 0.06s ease,
+        box-shadow 0.06s ease,
+        filter 0.15s ease;
+}
+
+/* Chunky and physical — it has a lip, and it travels when pressed. */
+.nt-trigger {
+    padding: 0.95rem 1.6rem;
+    font-size: 1.05rem;
+    color: var(--nt-accent-ink);
+    background: var(--nt-accent);
+    border: none;
+    box-shadow:
+        0 4px 0 rgb(0 0 0 / 22%),
+        0 8px 22px var(--nt-shadow);
+}
+
+.nt-trigger:hover {
+    filter: brightness(1.06);
+}
+
+.nt-trigger:active {
+    transform: translateY(3px);
+    box-shadow:
+        0 1px 0 rgb(0 0 0 / 22%),
+        0 3px 10px var(--nt-shadow);
+}
+
+.nt-btn {
+    padding: 0.8rem 1.2rem;
+    color: var(--nt-fg);
+    background: var(--nt-surface);
+    border: 1px solid var(--nt-line);
+}
+
+.nt-btn:hover {
+    border-color: var(--nt-accent);
+}
+
+.nt-btn:active {
+    transform: translateY(1px);
+}
+
+.nt-trigger:focus-visible,
+.nt-btn:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--nt-accent);
+    outline-offset: 3px;
+}
+
+.nt-note {
+    margin: 1rem 0 0;
+    color: var(--nt-muted);
+    font-size: 0.9rem;
+}
+
+/* Reserved so firing the demo never shifts the layout. */
+.nt-status {
+    min-height: 1.5em;
+    margin: 0.9rem 0 0;
+    font-family: var(--nt-mono);
+    font-size: 0.85rem;
+    color: var(--nt-accent-text);
+}
+
+/* ── Options ──────────────────────────────────────────────────────── */
+
+.nt-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    background: var(--nt-surface);
+    border: 1px solid var(--nt-line);
+    border-radius: 10px;
+    font-size: 0.92rem;
+}
+
+.nt-options label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+}
+
+.nt-options input {
+    accent-color: var(--nt-accent);
+}
+
+/* ── Code & keys ──────────────────────────────────────────────────── */
+
+pre.nt-code {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    background: var(--nt-code-bg);
+    border: 1px solid var(--nt-line);
+    border-radius: 10px;
+    font-family: var(--nt-mono);
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+pre.nt-code code {
+    font: inherit;
+}
+
+:not(pre) > code {
+    padding: 0.12em 0.38em;
+    background: var(--nt-code-bg);
+    border-radius: 4px;
+    font-family: var(--nt-mono);
+    font-size: 0.88em;
+}
+
+kbd {
+    display: inline-block;
+    padding: 0.1em 0.42em;
+    background: var(--nt-surface);
+    border: 1px solid var(--nt-line);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    font-family: var(--nt-mono);
+    font-size: 0.85em;
+    white-space: nowrap;
+}
+
+.nt-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    color: var(--nt-muted);
+}
+
+.nt-list li {
+    margin-bottom: 0.4rem;
+}
+
+.nt-list strong {
+    color: var(--nt-fg);
+    font-weight: 600;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────── */
+
+.nt-footer {
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--nt-line);
+    color: var(--nt-muted);
+    font-size: 0.88rem;
+}
+
+.nt-footer p {
+    margin: 0 0 0.4rem;
+}
+
+a {
+    color: var(--nt-accent-text);
+    text-underline-offset: 0.15em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
