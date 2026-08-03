@@ -1,6 +1,6 @@
 {
     "name": "@nowtwo-llc/frontend-messenger",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "description": "Channel-based real-time messaging for the browser, built on AWS AppSync Events via AWS Amplify.",
     "keywords": [
         "appsync",
