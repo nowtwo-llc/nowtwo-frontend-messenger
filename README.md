@@ -118,15 +118,13 @@ Every option passed to `new Messenger(config)`.
 | namespace | *string* | AppSync channel namespace. (**Default: `default`**) |
 | authMode | *string* | One of `apiKey`, `oidc`, `userPool`, `iam`, `lambda`, `none`. (**Default: `apiKey`**) |
 | channels | *object* | Arbitrary named channels as `{ logicalName: channelName }`. Any number of them. |
-| globalChannel | *string* | Channel name registered under the reserved logical name `global`. |
-| userChannel | *string* | Channel name registered under the reserved logical name `user`. |
-| proctoringChannel | *string* | Channel name registered under the reserved logical name `proctoring`. |
-| testingChannel | *string* | Channel name registered under the reserved logical name `testing`. |
+| globalChannel | *string* | Shorthand for a `channels` entry under the reserved logical name `global`. |
+| userChannel | *string* | Shorthand for a `channels` entry under the reserved logical name `user`. |
 | autoConnect | *boolean* | Whether to open every configured channel from the constructor. (**Default: `true`**) |
 | configureAmplify | *boolean* | Whether to call `Amplify.configure()`. Set `false` when your app configures Amplify itself. (**Default: `true`**) |
 | onError | *function* | `(error, channelName) => void`, called whenever a connection attempt fails. |
 
-A `channels` entry wins over the four dedicated options, so `{ globalChannel: 'a', channels: { global: 'b' } }` registers `b`.
+`globalChannel` and `userChannel` exist because a broadcast channel and a per-user channel are what almost every application needs. Everything else goes in `channels`, which has no fixed vocabulary. A `channels` entry wins over the shorthand options, so `{ globalChannel: 'a', channels: { global: 'b' } }` registers `b`.
 
 ### A note on `configureAmplify`
 
@@ -179,10 +177,20 @@ const messenger = new Messenger({
 
 ## Migrating from 2.x
 
-The 2.x API still works. `getGlobalChannel()`, `getUserChannel()`, `getProctoringChannel()` and `getTestingChannel()` are unchanged, and the four `*Channel` config options still register the same channels.
+`getGlobalChannel()` and `getUserChannel()` are unchanged, as are the `globalChannel` and `userChannel` config options.
 
 What changed:
 
+- **`proctoringChannel` and `testingChannel` are gone**, along with `getProctoringChannel()` and `getTestingChannel()`. They encoded one industry's vocabulary into a general-purpose library. Declare them as ordinary channels instead:
+
+  ```js
+  new Messenger({
+      // ...
+      channels: { proctoring: 'proctor-session-1', testing: 'exam-456' }
+  });
+  ```
+
+  Then `getChannel('proctoring')` replaces `getProctoringChannel()`, and `subscribe`/`publish`/`post` take the same names.
 - **The package moved** to `@nowtwo-llc/frontend-messenger` on the public npm registry. 2.x was published under a different scope to GitHub Packages, which required an access token to install; this one does not.
 - **`aws-amplify` is now a peer dependency.** Add it to your own dependencies if it is not there already.
 - **The package entry points are real.** 2.x pointed `main` at `src/Messenger.ts`, which was never published — importing the package by name did not work. It now ships ESM, CJS, UMD and type declarations.
@@ -195,6 +203,8 @@ The bundles compile to ES2020 and require a browser with WebSocket support. This
 
 ## Development
 
+Development requires Node 22 — there is an `.nvmrc`. The `engines` field says `>=20` because that constrains consumers, who never run this code in Node.
+
 ```bash
 npm install
 npm run build:dev    # development UMD build → ./build
@@ -203,7 +213,8 @@ npm run watch        # development build with file watching
 npm test             # Vitest suite (jsdom)
 npm run test:watch   # Vitest in watch mode
 npm run typecheck    # tsc on the library and the tests
-npm run lint         # ESLint, with autofix
+npm run lint         # oxlint --fix, then Prettier
+npm run lint:check   # oxlint + prettier --check, no writes — what CI runs
 ```
 
 To try the demo locally, run `npm run demo` — it builds `dist/` and serves the repo at <http://localhost:5050/>. The page also opens directly from the filesystem after a build, since it loads `../dist/` relatively.

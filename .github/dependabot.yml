@@ -25,9 +25,10 @@ updates:
           - minor
           - patch
     ignore:
-      # TypeScript 7 is the native Go port and exposes no JS compiler API, so
-      # ts-loader breaks entirely. Any move to 7 is a deliberate migration,
-      # not a dependency bump.
-      - dependency-name: typescript
+      # jsdom's engines floor drives the Node version in .nvmrc and CI. A major
+      # bump can raise that floor out from under both, which surfaces as an
+      # unrelated-looking test crash rather than an install error, so it is
+      # taken deliberately.
+      - dependency-name: jsdom
         update-types:
           - version-update:semver-major

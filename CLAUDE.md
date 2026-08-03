@@ -29,11 +29,13 @@ npm run test:coverage # Coverage, with the thresholds CI enforces
 ## Code Quality Commands
 
 ```bash
-npm run lint          # ESLint with autofix
-npm run lint:check    # ESLint without autofix — what CI runs
-npm run eslint:format # Prettier over src/tests, then ESLint autofix
+npm run lint          # oxlint --fix, then Prettier --write
+npm run lint:check    # oxlint --max-warnings=0 + prettier --check — what CI runs
+npm run format        # Prettier over src/, tests/ and root config files
 npm run typecheck     # tsc against the library and the tests
 ```
+
+Linting is [oxlint](https://oxc.rs/docs/guide/usage/linter.html), configured in `.oxlintrc.json`. There is no ESLint in this repo.
 
 ## Architecture
 
@@ -41,10 +43,10 @@ npm run typecheck     # tsc against the library and the tests
 
 A single `Messenger` class (`src/Messenger.ts`) is the whole library.
 
-- **Channels are registered by logical name.** `config.channels` takes `{ logicalName: channelName }`. The four 2.x options (`globalChannel`, `userChannel`, `proctoringChannel`, `testingChannel`) are sugar that register the reserved names `global`, `user`, `proctoring` and `testing`; an explicit `channels` entry overrides them.
+- **Channels are registered by logical name.** `config.channels` takes `{ logicalName: channelName }` and has no fixed vocabulary. `globalChannel` and `userChannel` are the only shorthand options, registering the reserved names `global` and `user`; an explicit `channels` entry overrides them. Keep it that way — domain-specific channel names belong in the consuming application, not in this library's API. (`proctoringChannel`/`testingChannel` were removed in 3.0.0 for exactly this reason.)
 - **Connections are memoised per channel.** `connect()` returns the in-flight promise if one exists, so repeated calls never open a second socket.
 - **Failures are handled but still thrown.** `connect()` attaches its own settle handler, so a rejected connection cannot become an unhandled rejection, while the promise it returns still rejects for callers who await it. Both handlers check they still own the connection slot before mutating state, so a late resolution cannot resurrect a channel that was closed mid-connect.
-- **The 2.x getters are preserved** and delegate to `getChannel()`.
+- **`getGlobalChannel()` and `getUserChannel()`** are thin wrappers over `getChannel()`.
 
 ### Build output
 
@@ -57,13 +59,15 @@ Three webpack configs run for a production build, plus one declaration-only `tsc
 | `dist/frontend-messenger.cjs` | CJS, Amplify external (~14 KiB) |
 | `dist/types/Messenger.d.ts` | Declarations, emitted once by `tsconfig.types.json` |
 
-ts-loader has `declaration: false` because three parallel compilers would otherwise race to write the same `.d.ts`.
+`esbuild-loader` transpiles without typechecking, so declarations come from a separate `tsc -p tsconfig.types.json` pass. Its `target` must stay in step with `target` in `tsconfig.json` and the per-config webpack targets.
 
 ### Key constraints
 
 - **`aws-amplify` is a peer dependency.** `Amplify.configure()` writes to a process-wide singleton, so the host app and this library must share one copy. Only the UMD build inlines it, since a `<script>` tag has no module resolution.
-- **TypeScript is pinned to 6.x.** TypeScript 7 is the native Go port and exposes no JavaScript compiler API, so `ts-loader` cannot run against it — and neither `typescript-eslint` nor `ts-jest` accept it as a peer. This was the cause of the `ERESOLVE` failure that 3.0.0 fixed. Dependabot holds TypeScript at major 6.
-- **No `baseUrl` in tsconfig.** It is deprecated in TS 6 and removed in TS 7; `paths` resolves relative to the config file on its own.
+- **TypeScript 7 rules out anything using the compiler API.** TS 7 is the native Go port and exposes no JavaScript compiler API. That is why the build uses `esbuild-loader` rather than `ts-loader`, and `oxlint` rather than `typescript-eslint` — both of those drive the compiler programmatically and cannot work. `tsc` is still used directly for typechecking and declaration emit. A dependency needing the compiler API will not install cleanly; this mismatch was the original `ERESOLVE` failure.
+- **No type-aware lint rules.** Losing `typescript-eslint` cost `no-floating-promises`, which matters in a promise-heavy library. `tsconfig.json` sets `noUncheckedIndexedAccess`, `noImplicitOverride` and `noFallthroughCasesInSwitch` as partial compensation. `exactOptionalPropertyTypes` is deliberately off — it flags two real sites in `src/Messenger.ts` that need signature changes, worth doing as its own task.
+- **No `baseUrl` in tsconfig.** It is removed in TS 7; `paths` resolves relative to the config file on its own.
+- **Dev requires Node 22.22.2+** (`.nvmrc`), set by jsdom 30. `engines` stays at `>=20` because that describes consumers, who never run this code in Node.
 
 ## Demo
 

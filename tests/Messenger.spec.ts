@@ -134,9 +134,7 @@ describe('constructor', () => {
 describe('channel registration', () => {
     it.each([
         ['globalChannel', 'global', 'broadcast'],
-        ['userChannel', 'user', 'user-123'],
-        ['proctoringChannel', 'proctoring', 'proctor-session-1'],
-        ['testingChannel', 'testing', 'exam-456']
+        ['userChannel', 'user', 'user-123']
     ])('registers %s under the reserved name "%s"', (option, name, channel) => {
         const messenger = new Messenger({ ...baseConfig, [option]: channel });
 
@@ -145,17 +143,26 @@ describe('channel registration', () => {
         expect(messenger.getChannelPath(name)).toBe(`default/${channel}`);
     });
 
-    it('connects all four legacy channels when all are specified', () => {
+    it('connects both shorthand channels when both are specified', () => {
         const messenger = new Messenger({
             ...baseConfig,
             globalChannel: 'broadcast',
-            userChannel: 'user-123',
-            proctoringChannel: 'proctor-1',
-            testingChannel: 'exam-456'
+            userChannel: 'user-123'
         });
 
-        expect(connectMock).toHaveBeenCalledTimes(4);
-        expect(messenger.getChannelNames()).toEqual(['global', 'user', 'proctoring', 'testing']);
+        expect(connectMock).toHaveBeenCalledTimes(2);
+        expect(messenger.getChannelNames()).toEqual(['global', 'user']);
+    });
+
+    it('registers shorthand and arbitrary channels side by side', () => {
+        const messenger = new Messenger({
+            ...baseConfig,
+            globalChannel: 'broadcast',
+            channels: { alerts: 'alerts-v2', presence: 'presence' }
+        });
+
+        expect(messenger.getChannelNames()).toEqual(['global', 'alerts', 'presence']);
+        expect(connectMock).toHaveBeenCalledTimes(3);
     });
 
     it('registers arbitrary named channels', () => {
@@ -295,21 +302,16 @@ describe('getChannel and the legacy getters', () => {
 
     it.each([
         ['getGlobalChannel', 'globalChannel'],
-        ['getUserChannel', 'userChannel'],
-        ['getProctoringChannel', 'proctoringChannel'],
-        ['getTestingChannel', 'testingChannel']
+        ['getUserChannel', 'userChannel']
     ] as const)('%s returns the channel when configured', async (getter, option) => {
         const messenger = new Messenger({ ...baseConfig, [option]: 'some-channel' });
 
         await expect(messenger[getter]()).resolves.toBe(mockChannel);
     });
 
-    it.each(['getGlobalChannel', 'getUserChannel', 'getProctoringChannel', 'getTestingChannel'] as const)(
-        '%s returns undefined when not configured',
-        (getter) => {
-            expect(new Messenger(baseConfig)[getter]()).toBeUndefined();
-        }
-    );
+    it.each(['getGlobalChannel', 'getUserChannel'] as const)('%s returns undefined when not configured', (getter) => {
+        expect(new Messenger(baseConfig)[getter]()).toBeUndefined();
+    });
 });
 
 describe('subscribe', () => {

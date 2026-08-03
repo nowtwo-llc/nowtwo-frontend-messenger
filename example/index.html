@@ -419,15 +419,16 @@ await messenger.disconnectAll();</code></pre>
                     </table>
                 </div>
                 <p class="nt-note">
-                    The 2.x getters —
-                    <code>getGlobalChannel()</code>
-                    ,
-                    <code>getUserChannel()</code>
-                    ,
-                    <code>getProctoringChannel()</code>
+                    <code>globalChannel</code>
                     and
-                    <code>getTestingChannel()</code>
-                    — still work. See the
+                    <code>userChannel</code>
+                    are shorthand for a broadcast channel and a per-user one, with
+                    <code>getGlobalChannel()</code>
+                    and
+                    <code>getUserChannel()</code>
+                    to match. Every other channel is declared through
+                    <code>channels</code>
+                    and reached by name. See the
                     <a href="https://github.com/nowtwo-llc/nowtwo-frontend-messenger#readme">README</a>
                     for every configuration option.
                 </p>

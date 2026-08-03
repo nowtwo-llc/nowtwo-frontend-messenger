@@ -75,10 +75,6 @@ export interface MessengerConfig {
     globalChannel?: string;
     /** Channel name for user-specific messages. Registered as `user`. */
     userChannel?: string;
-    /** Channel name for proctoring/monitoring messages. Registered as `proctoring`. */
-    proctoringChannel?: string;
-    /** Channel name for testing/exam-related messages. Registered as `testing`. */
-    testingChannel?: string;
     /**
      * Whether to open every configured channel from the constructor.
      * Set `false` to connect on demand via {@link Messenger.connect}.
@@ -95,22 +91,26 @@ export interface MessengerConfig {
     onError?: (error: unknown, channel: string) => void;
 }
 
-/** The four channel names 2.x exposed through dedicated getters. */
-const LEGACY_CHANNEL_KEYS = {
+/**
+ * Config options that are shorthand for a `channels` entry.
+ *
+ * Broadcast-to-everyone and per-user are the two channel shapes almost every
+ * application needs, so they get a named option and a dedicated getter. Any
+ * other channel is declared through `channels`.
+ */
+const SHORTHAND_CHANNEL_OPTIONS = {
     globalChannel: 'global',
-    userChannel: 'user',
-    proctoringChannel: 'proctoring',
-    testingChannel: 'testing'
+    userChannel: 'user'
 } as const;
 
 /**
  * Messenger provides a channel-based abstraction for AWS AppSync real-time
  * events.
  *
- * Channels are registered by logical name and connected over a WebSocket. The
- * four names 2.x hard-coded — `global`, `user`, `proctoring` and `testing` —
- * are still available through their original getters, but any number of
- * additional channels can be declared via `channels`.
+ * Channels are registered by logical name and connected over a WebSocket. Any
+ * number of them can be declared via `channels`; `global` and `user` have
+ * shorthand config options and dedicated getters because nearly every
+ * application wants a broadcast channel and a per-user one.
  *
  * **On Amplify configuration.** `Amplify.configure()` writes to a process-wide
  * singleton, so constructing a second Messenger with different credentials
@@ -171,16 +171,16 @@ export class Messenger {
             throw new Error('Messenger: `key` is required when `authMode` is "apiKey".');
         }
 
-        for (const [option, name] of Object.entries(LEGACY_CHANNEL_KEYS)) {
-            const channel = config[option as keyof typeof LEGACY_CHANNEL_KEYS];
+        for (const [option, name] of Object.entries(SHORTHAND_CHANNEL_OPTIONS)) {
+            const channel = config[option as keyof typeof SHORTHAND_CHANNEL_OPTIONS];
 
             if (channel) {
                 this.channelNames.set(name, channel);
             }
         }
 
-        // Declared after the legacy options so an explicit `channels` entry can
-        // deliberately point one of the four reserved names somewhere else.
+        // Declared after the shorthand options so an explicit `channels` entry
+        // can deliberately point one of the reserved names somewhere else.
         for (const [name, channel] of Object.entries(config.channels ?? {})) {
             if (channel) {
                 this.channelNames.set(name, channel);
@@ -455,22 +455,6 @@ export class Messenger {
      */
     public getUserChannel(): MessengerChannel {
         return this.getChannel('user');
-    }
-
-    /**
-     * Returns the proctoring channel connection promise.
-     * @returns the proctoring channel, or `undefined` if not configured
-     */
-    public getProctoringChannel(): MessengerChannel {
-        return this.getChannel('proctoring');
-    }
-
-    /**
-     * Returns the testing channel connection promise.
-     * @returns the testing channel, or `undefined` if not configured
-     */
-    public getTestingChannel(): MessengerChannel {
-        return this.getChannel('testing');
     }
 }
 
