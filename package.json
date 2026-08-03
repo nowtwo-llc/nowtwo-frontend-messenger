@@ -2,16 +2,6 @@
     "name": "@nowtwo-llc/frontend-messenger",
     "version": "3.0.0",
     "description": "Channel-based real-time messaging for the browser, built on AWS AppSync Events via AWS Amplify.",
-    "author": "NowTwo LLC <support@nowtwo.io> (https://www.nowtwo.io/)",
-    "license": "MIT",
-    "homepage": "https://github.com/nowtwo-llc/nowtwo-frontend-messenger#readme",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/nowtwo-llc/nowtwo-frontend-messenger.git"
-    },
-    "bugs": {
-        "url": "https://github.com/nowtwo-llc/nowtwo-frontend-messenger/issues"
-    },
     "keywords": [
         "appsync",
         "amplify",
@@ -23,6 +13,16 @@
         "messaging",
         "typescript"
     ],
+    "author": "NowTwo LLC <support@nowtwo.io> (https://www.nowtwo.io/)",
+    "license": "MIT",
+    "homepage": "https://github.com/nowtwo-llc/nowtwo-frontend-messenger#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nowtwo-llc/nowtwo-frontend-messenger.git"
+    },
+    "bugs": {
+        "url": "https://github.com/nowtwo-llc/nowtwo-frontend-messenger/issues"
+    },
     "main": "./dist/frontend-messenger.cjs",
     "module": "./dist/frontend-messenger.mjs",
     "types": "./dist/types/Messenger.d.ts",
@@ -41,11 +41,11 @@
     "files": [
         "dist/"
     ],
-    "publishConfig": {
-        "access": "public"
-    },
     "engines": {
         "node": ">=20"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "scripts": {
         "build": "npm run build:prod",
@@ -59,12 +59,14 @@
         "eslint:format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"*.{js,mjs,json}\" && eslint --fix .",
         "lint": "npm run eslint",
         "lint:check": "eslint --color --max-warnings=0 .",
+        "lint:fix": "npm run eslint",
         "prepublishOnly": "npm run build:prod",
         "test": "vitest run",
-        "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest",
         "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
         "update": "npm-check-updates -u",
+        "update:check": "npm-check-updates",
         "watch": "cross-env NODE_ENV=development webpack --progress --watch"
     },
     "peerDependencies": {
