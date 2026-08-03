@@ -321,7 +321,7 @@ describe('subscribe', () => {
 
         expect(connectMock).toHaveBeenCalledWith('default/alerts-v2', undefined);
 
-        const observer = mockChannel.subscribe.mock.calls[0][0];
+        const observer = mockChannel.subscribe.mock.calls[0]![0];
         observer.next({ hello: 'world' });
 
         expect(next).toHaveBeenCalledWith({ hello: 'world' });
@@ -333,7 +333,7 @@ describe('subscribe', () => {
         const error = vi.fn();
         await messenger.subscribe('alerts', { error });
 
-        const observer = mockChannel.subscribe.mock.calls[0][0];
+        const observer = mockChannel.subscribe.mock.calls[0]![0];
         const failure = new Error('subscription failed');
         observer.error(failure);
 
@@ -344,7 +344,7 @@ describe('subscribe', () => {
         const messenger = new Messenger({ ...baseConfig, channels: { alerts: 'alerts-v2' } });
         await messenger.subscribe('alerts', {});
 
-        const observer = mockChannel.subscribe.mock.calls[0][0];
+        const observer = mockChannel.subscribe.mock.calls[0]![0];
 
         expect(() => observer.next({})).not.toThrow();
         expect(() => observer.error(new Error('x'))).not.toThrow();
@@ -459,8 +459,8 @@ describe('disconnect', () => {
         const messenger = new Messenger({ ...baseConfig, globalChannel: 'broadcast', userChannel: 'user-123' });
         await messenger.disconnectAll();
 
-        expect(channels[0].close).toHaveBeenCalledTimes(1);
-        expect(channels[1].close).toHaveBeenCalledTimes(1);
+        expect(channels[0]!.close).toHaveBeenCalledTimes(1);
+        expect(channels[1]!.close).toHaveBeenCalledTimes(1);
         expect(messenger.getChannel('global')).toBeUndefined();
         expect(messenger.getChannel('user')).toBeUndefined();
     });

@@ -21,18 +21,11 @@ const resolve = {
 const tsRule = {
     test: /\.ts$/,
     exclude: /node_modules/,
-    use: {
-        loader: 'ts-loader',
-        options: {
-            // tsconfig.json also covers the tests so the editor and ESLint can
-            // see them. The bundles must only compile what the entry actually
-            // reaches, or a test-only type error fails the build.
-            onlyCompileBundledFiles: true,
-            compilerOptions: {
-                declaration: false,
-                declarationMap: false
-            }
-        }
+    loader: 'esbuild-loader',
+    options: {
+        loader: 'ts',
+        // Keep in step with `target` in tsconfig.json and the config targets below.
+        target: 'es2020'
     }
 };
 

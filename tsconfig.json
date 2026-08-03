@@ -16,6 +16,17 @@
         "skipLibCheck": true,
         "sourceMap": true,
         "strict": true,
+        // Partial compensation for losing typescript-eslint type-aware rules in
+        // the move to TS 7. This repo is promise-heavy, so it gave up the most
+        // (no-floating-promises has no tsconfig equivalent).
+        //
+        // `exactOptionalPropertyTypes` is deliberately NOT enabled: it flags two
+        // real sites in src/Messenger.ts (168 and 197) that need signature
+        // changes. Worth doing, but as its own task rather than folded into a
+        // toolchain swap.
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noFallthroughCasesInSwitch": true,
         "target": "es2020",
         // No `baseUrl`: it is deprecated in TS 6 and removed in TS 7. Modern
         // TypeScript resolves `paths` relative to this file on its own.

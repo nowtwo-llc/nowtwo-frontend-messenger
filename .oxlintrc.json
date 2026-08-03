@@ -1,0 +1,17 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "ignorePatterns": ["build/", "dist/", "coverage/", "node_modules/"],
+    "env": { "browser": true, "es2022": true },
+    "categories": { "correctness": "error" },
+    "rules": {
+        "no-param-reassign": "warn",
+        "no-restricted-globals": "warn",
+        "no-underscore-dangle": "off",
+        "typescript/ban-ts-comment": "warn",
+        "typescript/no-explicit-any": "off"
+    },
+    "overrides": [
+        { "files": ["*.js", "*.cjs", "*.mjs", "scripts/**"], "env": { "node": true } },
+        { "files": ["tests/**/*.ts"], "rules": { "no-unused-expressions": "off" } }
+    ]
+}
