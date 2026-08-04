@@ -56,4 +56,4 @@ Releases publish from CI:
 1. Bump `version` in `package.json`.
 2. Commit, then tag: `git tag v3.1.0 && git push --tags`.
 
-The publish workflow verifies the tag matches `package.json`, runs the full check suite, publishes to npm with provenance, then mirrors to GitHub Packages. `prepublishOnly` rebuilds `dist/` from the tagged source, so build output never needs to be committed.
+The publish workflow verifies the tag matches `package.json`, runs the full check suite, and publishes to npm with provenance. `prepublishOnly` rebuilds `dist/` from the tagged source, so build output never needs to be committed.

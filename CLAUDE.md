@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Frontend Messenger is a TypeScript library for real-time messaging over AWS AppSync Events. It provides a channel-based abstraction over AWS Amplify's Events client: channels are registered by logical name, and the library owns their connection lifecycle.
 
-Published as `@nowtwo-llc/frontend-messenger` to the public npm registry, and mirrored to GitHub Packages.
+Published as `@nowtwo-llc/frontend-messenger` to the public npm registry only. A GitHub
+Packages mirror was published previously and has been removed; do not reintroduce it.
 
 ## Build Commands
 

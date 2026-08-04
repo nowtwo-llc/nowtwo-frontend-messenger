@@ -8,9 +8,9 @@ on:
 permissions:
   contents: read
 
-# npm is the registry consumers use. GitHub Packages is an internal backup
-# mirror. Both orgs are named "nowtwo-llc", so the same @nowtwo-llc/frontend-messenger
-# name publishes to both with no rewriting.
+# The public npm registry is the only place this package is published.
+# publishConfig in package.json carries `access: public` and deliberately pins
+# no registry, so the registry-url set below is what takes effect.
 jobs:
   npm:
     name: npm (public)
@@ -77,32 +77,3 @@ jobs:
       # generated from the tagged source rather than whatever was on disk.
       - name: Publish to npm
         run: npm publish
-
-  github-packages:
-    name: GitHub Packages (internal backup)
-    runs-on: ubuntu-latest
-    # npm is the registry consumers use; only mirror to the internal backup
-    # once that publish has actually succeeded.
-    needs: npm
-
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version-file: .nvmrc
-          registry-url: https://npm.pkg.github.com
-          scope: '@nowtwo-llc'
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Publish to GitHub Packages
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
